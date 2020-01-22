@@ -15,9 +15,14 @@ public class GhostController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        velocity = new Vector3(1f, 0f, 0f);
+        int startx = Random.Range(-1, 1);
+        if (startx == 0)
+            startx = 1;
+        
+        velocity = new Vector3((float)startx, 0f, 0f);
         rend = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        anim.Play("RedGhostRight");
     }
 
     // Update is called once per frame
@@ -41,32 +46,51 @@ public class GhostController : MonoBehaviour
         if (change == 0)
         {
             velocity = new Vector3(-velocity.x, -velocity.y, 0);
+            //not coding the animation control for this. 
+
         }
+
         //1% of the time, switch from horizontal to vertical, or vice-versa: 
         else if (change == 1)
         {
             if (velocity.x != 0f)
+            {
                 velocity = new Vector3(0f, velocity.x, 0f);
-            else
+                if (velocity.y > 0)
+                    anim.Play("RedGhostUp");
+                else
+                    anim.Play("RedGhostDown");
+            }
+            else {
                 velocity = new Vector3(velocity.y, 0f, 0f);
+                if (velocity.x > 0)
+                    anim.Play("RedGhostRight");
+                else
+                    anim.Play("RedGhostLeft");
+            }
         }
+
 
         //make sure the obect is inside the borders... if edge is hit reverse direction
         if ((transform.position.x <= leftBorder + width / 2.0) && velocity.x < 0f)
         {
             velocity = new Vector3(1f, 0f, 0f);
+            anim.Play("RedGhostRight");
         }
         if ((transform.position.x >= rightBorder - width / 2.0) && velocity.x > 0f)
         {
             velocity = new Vector3(-1f, 0f, 0f);
+            anim.Play("RedGhostLeft");
         }
         if ((transform.position.y <= bottomBorder + height / 2.0) && velocity.y < 0f)
         {
             velocity = new Vector3(0f, 1f, 0f);
+            anim.Play("RedGhostUp");
         }
         if ((transform.position.y >= topBorder - height / 2.0) && velocity.y > 0f)
         {
             velocity = new Vector3(0f, -1f, 0f);
+            anim.Play("RedGhostDown");
         }
         transform.position = transform.position + velocity * Time.deltaTime * speed;
     }
